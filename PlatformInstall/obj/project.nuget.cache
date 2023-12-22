@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "P/FeeG+mWtshdQM2VzEGTc27XWsb2LTUy8CsDj32ozy3ZReVRSZMiResNIWIbdDMsXz1uqZ2s57i9ejfI3Ky3w==",
+  "dgSpecHash": "zkHpObHvEgZZn5VDjBsJGbDnGbNTrM8y9XS3N17vp2IPZthvlZRPvhE4FDn0T9lLMHuxezgU+6sqLgfLkhBR7w==",
   "success": true,
-  "projectFilePath": "C:\\Ambiente Dev\\PlatformInstall\\PlatformInstall.csproj",
+  "projectFilePath": "C:\\ProjetoPlatform\\PlatformInstall\\PlatformInstall.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lucas\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\lucas\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",

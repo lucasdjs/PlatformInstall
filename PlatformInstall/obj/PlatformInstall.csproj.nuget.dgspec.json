@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Ambiente Dev\\PlatformInstall\\PlatformInstall.csproj": {}
+    "C:\\ProjetoPlatform\\PlatformInstall\\PlatformInstall.csproj": {}
   },
   "projects": {
-    "C:\\Ambiente Dev\\PlatformInstall\\PlatformInstall.csproj": {
+    "C:\\ProjetoPlatform\\PlatformInstall\\PlatformInstall.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Ambiente Dev\\PlatformInstall\\PlatformInstall.csproj",
+        "projectUniqueName": "C:\\ProjetoPlatform\\PlatformInstall\\PlatformInstall.csproj",
         "projectName": "PlatformInstall",
-        "projectPath": "C:\\Ambiente Dev\\PlatformInstall\\PlatformInstall.csproj",
+        "projectPath": "C:\\ProjetoPlatform\\PlatformInstall\\PlatformInstall.csproj",
         "packagesPath": "C:\\Users\\lucas\\.nuget\\packages\\",
-        "outputPath": "C:\\Ambiente Dev\\PlatformInstall\\obj\\",
+        "outputPath": "C:\\ProjetoPlatform\\PlatformInstall\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
