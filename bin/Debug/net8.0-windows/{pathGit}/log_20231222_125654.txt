@@ -1,0 +1,56 @@
+﻿**********************
+Início da transcrição do Windows PowerShell
+Hora de início: 20231222125654
+Nome de Usuário: DESKTOP-5SNC0TF\lucas
+Executar como Usuário: DESKTOP-5SNC0TF\lucas
+Nome da Configuração: 
+Computador: DESKTOP-5SNC0TF (Microsoft Windows NT 10.0.19045.0)
+Aplicativo Host: powershell.exe -ExecutionPolicy Bypass -File C:\setup.ps1
+ID do Processo: 12692
+PSVersion: 5.1.19041.3803
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.19041.3803
+BuildVersion: 10.0.19041.3803
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcrição iniciada, o arquivo de saída é {pathGit}\log_20231222_125654.txt
+Instalando o Node Version Manager (NVM)...
+Version 14.16.0 is already installed.
+nvm use 14.16.0
+Now using node v14.16.0 (64-bit)
+NVM instalado com sucesso.
+PS>TerminatingError(Set-Variable): "Não é possível localizar um parâmetro posicional que aceite o argumento '-'."
+Set-Variable : Não é possível localizar um parâmetro posicional que aceite o argumento '-'.
+No C:\setup.ps1:19 caractere:13
++             Set - Location - Path $gitNDDigitalPath
++             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Set-Variable], ParameterBindingException
+    + FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.SetVariableCommand
+Set-Variable : Não é possível localizar um parâmetro posicional que aceite o argumento '-'.
+No C:\setup.ps1:19 caractere:13
++             Set - Location - Path $gitNDDigitalPath
++             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Set-Variable], ParameterBindingException
+    + FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.SetVariableCommand
+
+fatal: destination path 'nddFrete_Platform' already exists and is not an empty directory.
+Set-Location : Não é possível localizar o caminho 'C:\git.nddigital\nddFrete_Platform' porque ele não existe.
+No C:\setup.ps1:25 caractere:13
++             Set-Location -Path "C:\git.nddigital\nddFrete_Platform"
++             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\git.nddigital\nddFrete_Platform:String) [Set-Location], 
+ItemNotFoundException
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.SetLocationCommand
+Set-Location : Não é possível localizar o caminho 'C:\git.nddigital\nddFrete_Platform' porque ele não existe.
+No C:\setup.ps1:25 caractere:13
++             Set-Location -Path "C:\git.nddigital\nddFrete_Platform"
++             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\git.nddigital\nddFrete_Platform:String) [Set-Location], ItemNotFound
+   Exception
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.SetLocationCommand
+
+PS>$global:?
+True
