@@ -1,20 +1,10 @@
 ﻿using Newtonsoft.Json;
-using PlaformInstall.Interfaces;
-using PlaformInstall.Services;
 using PlatformInstall.Domain.Identity;
 using PlatformInstall.Domain.Json;
+using PlatformInstall.Infraestruture;
 using PlatformInstall.Scripts;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace PlatformInstall.Pages
 {
@@ -28,14 +18,8 @@ namespace PlatformInstall.Pages
         }
         public void Execute(string path)
         {
-            progressBar1.Location = new Point(68, 406);
-            progressBar1.Name = "progressBar1";
-            progressBar1.Size = new Size(549, 23);
-            progressBar1.TabIndex = 16;
-            progressBar1.Value = 0;
-            progressBar1.Maximum = 100;
-            progressBar1.Minimum = 0;
-
+            ConfigureProgressBar();
+            progressBar1.Value = 5;
             AtualizarRichTextBox("Iniciando a instalação do platform...");
             var firstPathBat = Path.Combine(path, "setup.bat");
             var ps1Path = Path.Combine(path, "setup.ps1");
@@ -174,6 +158,8 @@ namespace PlatformInstall.Pages
             CreatePs1(path, buildShipper);
             ExecuteScript(pathGit, firstPathBat, "Buildando pacotes shipper");
             AtualizarRichTextBox($"Build realizado sucesso.");
+            progressBar1.Value = 43;
+            ChangeAppSettings(pathGit);
             DeleteScript(ps1Path);
             progressBar1.Value = 85;
             AtualizarRichTextBox($"Script apagado com suceso");
@@ -191,8 +177,14 @@ namespace PlatformInstall.Pages
             ExecuteScript(pathGit, firstPathBat, "Instalando projetos no docker");
             AtualizarRichTextBox($"Projetos instalados com sucesso.");
             DeleteScript(ps1Path);
-            progressBar1.Value = 100;
+            progressBar1.Value = 95;
             AtualizarRichTextBox($"Script apagado com suceso");
+            MessageBox.Show("Plaform instalado com sucesso");
+
+            progressBar1.Value = 100;
+            AtualizarRichTextBox($"Criando banco de dados para platform...");
+            ConnectionDatabase.CreateDatabases();
+            AtualizarRichTextBox($"Banco de dados criado com sucesso.");
         }
 
         public void ExecuteScript(string workingDirectory, string script, string message)
@@ -205,7 +197,7 @@ namespace PlatformInstall.Pages
                     processo.StartInfo.FileName = script;
                     processo.StartInfo.WorkingDirectory = workingDirectory;
                     processo.EnableRaisingEvents = true;
-                    processo.StartInfo.CreateNoWindow = true;
+                    processo.StartInfo.CreateNoWindow = false;
 
                     AtualizarRichTextBox(message);
                     processo.Start();
@@ -220,7 +212,6 @@ namespace PlatformInstall.Pages
                 {
                     processo.Dispose();
                 }
-
             }
         }
 
@@ -239,6 +230,18 @@ namespace PlatformInstall.Pages
                 logProgress.SelectionStart = logProgress.Text.Length;
                 logProgress.ScrollToCaret();
             }
+        }
+
+        private void ChangeAppSettings(string path)
+        {
+            var newPath = Path.Combine(path, "nddFrete_Platform\\projects\\shipper\\Server\\NDDigital.Shipper.ShipperAPI\\appsettings.json");
+            UpdateJsonFile<Appsettings>(newPath, clients =>
+            {
+                clients.General.ConnectionStringCache = "191.235.97.40:6379";
+                clients.General.StorageUrl = "https://nddfrete-dev-storage.e-datacenter.nddigital.com.br/";
+                clients.UserProvider.ClientID = _identity.UserSdk.ClientId;
+                clients.UserProvider.ClientSecret = _identity.UserSdk.SecretKey;
+            });
         }
 
         private void richTextBox1_TextChanged_1(object? sender, EventArgs e)
@@ -296,39 +299,61 @@ namespace PlatformInstall.Pages
 
         public void ChangeFileEnv(string path)
         {
-            string keyToModify = "PLATFORM_AUTH_URL";
-            string newValue = "https://nddfrete-dev.e-datacenter.nddigital.com.br/";
-
-            var pathEnv = Path.Combine(path, "nddFrete_Platform\\configs\\.env");
-
-            var lines = File.ReadLines(pathEnv)
-             .Select(line =>
-                 line.StartsWith(keyToModify + "=") ? keyToModify + "= " + newValue :
-                 line.StartsWith("PLATFORM_AUTH_SCOPE=") ? line.Replace("nddfrete-tpl-api", "") :
-                 line).ToList();
-
-            if (lines.Any(line => line.StartsWith(keyToModify + "= ")))
+            try
             {
-                AtualizarRichTextBox($"Arquivo {pathEnv} atualizado com sucesso.");
-            }
-            else
-            {
-                AtualizarRichTextBox($"Chave não encontrada no arquivo");
-            }
+                if (!Path.Exists(path))
+                {
+                    AtualizarRichTextBox($"Não foi possivel encontrar o arquivo.");
+                    return;
+                }
 
-            File.WriteAllLines(pathEnv, lines);
+                string keyToModify = "PLATFORM_AUTH_URL";
+                string newValue = "https://nddfrete-dev.e-datacenter.nddigital.com.br/";
+
+                var pathEnv = Path.Combine(path, "nddFrete_Platform\\configs\\.env");
+
+                var lines = File.ReadLines(pathEnv)
+                 .Select(line =>
+                     line.StartsWith(keyToModify + "=") ? keyToModify + "= " + newValue :
+                     line.StartsWith("PLATFORM_AUTH_SCOPE=") ? line.Replace("nddfrete-tpl-api", "") :
+                     line).ToList();
+
+                if (lines.Any(line => line.StartsWith(keyToModify + "= ")))
+                {
+                    AtualizarRichTextBox($"Arquivo {pathEnv} atualizado com sucesso.");
+                }
+                else
+                {
+                    AtualizarRichTextBox($"Chave não encontrada no arquivo");
+                }
+
+                File.WriteAllLines(pathEnv, lines);
+            }
+            catch (Exception ex)
+            {
+                AtualizarRichTextBox($"Ocorreu um erro na atualização do arquivo. {ex.Message}");
+            }
+            
         }
 
         public void ChangeConfigurationNddGatewayJson(string path)
         {
-            UpdateJsonFile<NddGateway>(Path.Combine(path, "nddFrete_Platform\\configs\\ndd-gateway.dev.docker.json"), configuracao =>
+            try
             {
-                foreach (var route in configuracao.Routes)
+                if (!Path.Exists(path))
                 {
-                    if (route.UpstreamPathTemplate == "/policies-api/{url}")
+                    AtualizarRichTextBox($"Não foi possivel encontrar o arquivo.");
+                    return;
+                }
+
+                UpdateJsonFile<NddGateway>(Path.Combine(path, "nddFrete_Platform\\configs\\ndd-gateway.dev.docker.json"), configuracao =>
+                {
+                    foreach (var route in configuracao.Routes)
                     {
-                        route.DownstreamScheme = "https";
-                        route.DownstreamHostAndPorts = new List<DownstreamHostAndPorts>
+                        if (route.UpstreamPathTemplate == "/policies-api/{url}")
+                        {
+                            route.DownstreamScheme = "https";
+                            route.DownstreamHostAndPorts = new List<DownstreamHostAndPorts>
                 {
                     new DownstreamHostAndPorts
                     {
@@ -336,31 +361,50 @@ namespace PlatformInstall.Pages
                         Port = 443
                     }
                 };
+                        }
                     }
-                }
-            });
+                });
+            }
+            catch (Exception ex)
+            {
+                AtualizarRichTextBox($"Ocorreu um erro na atualização do arquivo. {ex.Message}");
+            }
+           
         }
 
         private void UpdateJsonFile<T>(string path, Action<T> updateAction)
         {
             AtualizarRichTextBox($"Iniciando a atualização do arquivo JSON em {path}...");
 
-            string jsonConteudo = File.ReadAllText(path);
-            T configuracao = JsonConvert.DeserializeObject<T>(jsonConteudo);
-
-            updateAction(configuracao);
-
-            JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+            try
             {
-                NullValueHandling = NullValueHandling.Ignore,
-                Formatting = Formatting.Indented
-            };
+                if (!Path.Exists(path))
+                {
+                    AtualizarRichTextBox($"Não foi possivel encontrar o arquivo.");
+                    return;
+                }
 
-            string novoJsonConteudo = JsonConvert.SerializeObject(configuracao, jsonSettings);
+                string jsonConteudo = File.ReadAllText(path);
+                T configuracao = JsonConvert.DeserializeObject<T>(jsonConteudo);
 
-            File.WriteAllText(path, novoJsonConteudo);
+                updateAction(configuracao);
 
-            AtualizarRichTextBox($"Arquivo {Path.GetFileName(path)} atualizado com sucesso.");
+                JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    Formatting = Formatting.Indented
+                };
+
+                string novoJsonConteudo = JsonConvert.SerializeObject(configuracao, jsonSettings);
+
+                File.WriteAllText(path, novoJsonConteudo);
+
+                AtualizarRichTextBox($"Arquivo {Path.GetFileName(path)} atualizado com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                AtualizarRichTextBox($"Ocorreu um erro na atualização do arquivo. {ex.Message}");
+            }
         }
 
         public void DeleteScript(string ps1)
@@ -389,6 +433,17 @@ namespace PlatformInstall.Pages
         {
             Execute(textBoxUser.Text);
             Finish.Enabled = true;
+        }
+
+        private void ConfigureProgressBar()
+        {
+            progressBar1.Location = new Point(68, 406);
+            progressBar1.Name = "progressBar1";
+            progressBar1.Size = new Size(549, 23);
+            progressBar1.TabIndex = 16;
+            progressBar1.Value = 0;
+            progressBar1.Maximum = 100;
+            progressBar1.Minimum = 0;
         }
     }
 }

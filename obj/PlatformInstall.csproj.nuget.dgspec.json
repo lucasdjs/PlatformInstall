@@ -45,6 +45,10 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "dependencies": {
+            "Microsoft.Data.SqlClient": {
+              "target": "Package",
+              "version": "[5.1.2, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.0, )"
@@ -93,9 +97,21 @@
               "target": "Package",
               "version": "[7.4.0, )"
             },
+            "Microsoft.SqlServer.Dac": {
+              "target": "Package",
+              "version": "[1.0.1, )"
+            },
+            "Microsoft.SqlServer.DacFx": {
+              "target": "Package",
+              "version": "[162.1.167, )"
+            },
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.3, )"
+            },
+            "System.Data.SqlClient": {
+              "target": "Package",
+              "version": "[4.8.5, )"
             },
             "System.Management.Automation": {
               "target": "Package",
