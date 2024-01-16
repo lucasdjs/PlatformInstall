@@ -1,10 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Build.Evaluation;
+using Microsoft.Build.Exceptions;
+using Microsoft.Build.Execution;
+using Microsoft.Build.Locator;
+using Newtonsoft.Json;
 using PlatformInstall.Domain.Identity;
 using PlatformInstall.Domain.Json;
 using PlatformInstall.Infraestruture;
 using PlatformInstall.Scripts;
 using System.Data;
 using System.Diagnostics;
+using System.Windows.Forms;
+
 
 namespace PlatformInstall.Pages
 {
@@ -42,31 +48,28 @@ namespace PlatformInstall.Pages
             ChangeFileEnv(pathGit);
             DeleteScript(ps1Path);
 
-            var script2 = ScriptsConst.Script2(pathGit);
-            CreatePs1(path, script2);
-            ExecuteScript(pathGit, firstPathBat, "Instalando pacotes typescript...");
-            AtualizarRichTextBox($"Pacotes instalados com sucesso.");
-            DeleteScript(ps1Path);
-            progressBar1.Value = 25;
-            AtualizarRichTextBox($"Script apagado com suceso");
-
             var installNdk = ScriptsConst.InstallNdk(pathGit);
             CreatePs1(path, installNdk);
             ExecuteScript(pathGit, firstPathBat, "Instalando pacotes NDK globalmente...");
             AtualizarRichTextBox($"Pacotes instalados com sucesso.");
             DeleteScript(ps1Path);
-            progressBar1.Value = 30;
-            AtualizarRichTextBox($"Script apagado com suceso");
-
+            progressBar1.Value = 25;
+ 
             var loadNdkPlatform = ScriptsConst.LoadNdkPlatform(pathGit);
             CreatePs1(path, loadNdkPlatform);
             ExecuteScript(pathGit, firstPathBat, "Clonando projetos da platform...");
             AtualizarRichTextBox($"Clonagem do repositório realizada com sucesso.");
             DeleteScript(ps1Path);
-            progressBar1.Value = 35;
-            AtualizarRichTextBox($"Script apagado com suceso");
+            progressBar1.Value = 30;
 
-            var basePathProjects = Path.Combine(path, "\\nddFrete_Platform\\projects");
+            var script2 = ScriptsConst.InstallTypescript(pathGit);
+            CreatePs1(path, script2);
+            ExecuteScript(pathGit, firstPathBat, "Instalando pacotes typescript...");
+            AtualizarRichTextBox($"Pacotes instalados com sucesso.");
+            DeleteScript(ps1Path);
+            progressBar1.Value = 35;
+
+            var basePathProjects = Path.Combine(pathGit, "nddFrete_Platform\\projects");
             var shipper = Path.Combine(basePathProjects, "shipper");
             var clientShipper = Path.Combine(basePathProjects, "client-shipper");
 
@@ -77,6 +80,7 @@ namespace PlatformInstall.Pages
                 ExecuteScript(pathGit, firstPathBat, "Removendo pastas da shipper");
                 AtualizarRichTextBox($"Remoção realizada com sucesso.");
                 DeleteScript(ps1Path);
+                progressBar1.Value = 36;
 
             }
             if (Directory.Exists(clientShipper))
@@ -86,6 +90,7 @@ namespace PlatformInstall.Pages
                 ExecuteScript(pathGit, firstPathBat, "Removendo pastas da client-shipper");
                 AtualizarRichTextBox($"Remoção realizada com sucesso.");
                 DeleteScript(ps1Path);
+                progressBar1.Value = 37;
 
             }
             progressBar1.Value = 40;
@@ -96,7 +101,7 @@ namespace PlatformInstall.Pages
             AtualizarRichTextBox($"Clonagem do repositório realizada com sucesso..");
             DeleteScript(ps1Path);
             progressBar1.Value = 45;
-            AtualizarRichTextBox($"Script apagado com suceso");
+ 
 
             var ndkLoadClientShipper = ScriptsConst.NdkLoadClient(pathGit);
             CreatePs1(path, ndkLoadClientShipper);
@@ -104,7 +109,7 @@ namespace PlatformInstall.Pages
             AtualizarRichTextBox($"Clonagem do repositório realizada com sucesso..");
             DeleteScript(ps1Path);
             progressBar1.Value = 50;
-            AtualizarRichTextBox($"Script apagado com suceso");
+ 
 
             var ndkInstallApps = ScriptsConst.NdkInstallApps(pathGit);
             CreatePs1(path, ndkInstallApps);
@@ -112,7 +117,7 @@ namespace PlatformInstall.Pages
             AtualizarRichTextBox($"Instalado com sucesso.");
             DeleteScript(ps1Path);
             progressBar1.Value = 55;
-            AtualizarRichTextBox($"Script apagado com suceso");
+ 
 
             var buildCore = ScriptsConst.BuildCore(pathGit);
             CreatePs1(path, buildCore);
@@ -120,7 +125,7 @@ namespace PlatformInstall.Pages
             AtualizarRichTextBox($"Build realizado sucesso.");
             DeleteScript(ps1Path);
             progressBar1.Value = 60;
-            AtualizarRichTextBox($"Script apagado com suceso");
+ 
 
             var buildGlobalStyles = ScriptsConst.BuildGlobalStyles(pathGit);
             CreatePs1(path, buildGlobalStyles);
@@ -128,15 +133,13 @@ namespace PlatformInstall.Pages
             AtualizarRichTextBox($"Build realizado sucesso.");
             DeleteScript(ps1Path);
             progressBar1.Value = 65;
-            AtualizarRichTextBox($"Script apagado com suceso");
-
+ 
             var buildLayout = ScriptsConst.BuildLayout(pathGit);
             CreatePs1(path, buildLayout);
             ExecuteScript(pathGit, firstPathBat, "Buildando pacotes Layout");
             AtualizarRichTextBox($"Build realizado sucesso.");
             DeleteScript(ps1Path);
             progressBar1.Value = 70;
-            AtualizarRichTextBox($"Script apagado com suceso");
 
             var buildGateway = ScriptsConst.BuildGateway(pathGit);
             CreatePs1(path, buildGateway);
@@ -144,7 +147,6 @@ namespace PlatformInstall.Pages
             AtualizarRichTextBox($"Build realizado sucesso.");
             DeleteScript(ps1Path);
             progressBar1.Value = 75;
-            AtualizarRichTextBox($"Script apagado com suceso");
 
             var buildPlatformBrowser = ScriptsConst.BuildPlatformBrowser(pathGit);
             CreatePs1(path, buildPlatformBrowser);
@@ -152,17 +154,14 @@ namespace PlatformInstall.Pages
             AtualizarRichTextBox($"Build realizado sucesso.");
             DeleteScript(ps1Path);
             progressBar1.Value = 80;
-            AtualizarRichTextBox($"Script apagado com suceso");
 
             var buildShipper = ScriptsConst.BuildShipper(pathGit);
             CreatePs1(path, buildShipper);
             ExecuteScript(pathGit, firstPathBat, "Buildando pacotes shipper");
             AtualizarRichTextBox($"Build realizado sucesso.");
-            progressBar1.Value = 43;
             ChangeAppSettings(pathGit);
             DeleteScript(ps1Path);
             progressBar1.Value = 85;
-            AtualizarRichTextBox($"Script apagado com suceso");
 
             var buildClientShipper = ScriptsConst.BuildClientShipper(pathGit);
             CreatePs1(path, buildClientShipper);
@@ -170,21 +169,55 @@ namespace PlatformInstall.Pages
             AtualizarRichTextBox($"Build realizado sucesso.");
             DeleteScript(ps1Path);
             progressBar1.Value = 90;
-            AtualizarRichTextBox($"Script apagado com suceso");
 
-            var installProjectsDocker = ScriptsConst.InstallProjectsDocker(pathGit);
-            CreatePs1(path, installProjectsDocker);
-            ExecuteScript(pathGit, firstPathBat, "Instalando projetos no docker");
+            var npmInstall = ScriptsConst.NpmInstall(pathGit);
+            CreatePs1(path, npmInstall);
+            ExecuteScript(pathGit, firstPathBat, "Atualizando npm");
+            ChangeAppSettings(pathGit);
+            DeleteScript(ps1Path);
+            progressBar1.Value = 92;
+
+            var loginDocker = ScriptsConst.LoginDocker(pathGit);
+            CreatePs1(path, loginDocker);
+            ExecuteScript(pathGit, firstPathBat, "Realizando login no docker.");
             AtualizarRichTextBox($"Projetos instalados com sucesso.");
             DeleteScript(ps1Path);
             progressBar1.Value = 95;
-            AtualizarRichTextBox($"Script apagado com suceso");
-            MessageBox.Show("Plaform instalado com sucesso");
+    
+            var installProjectsDocker = ScriptsConst.InstallAppsDocker(pathGit);
+            CreatePs1(path, installProjectsDocker);
+            ExecuteScript(pathGit, firstPathBat, "Instalando apps no docker.");
+            AtualizarRichTextBox($"Projetos instalados com sucesso.");
+            DeleteScript(ps1Path);
+            progressBar1.Value = 96;
+
+            var installShipperDocker = ScriptsConst.InstallShipperDocker(pathGit);
+            CreatePs1(path, installShipperDocker);
+            ExecuteScript(pathGit, firstPathBat, "Instalando Shipper no docker.");
+            AtualizarRichTextBox($"Projetos instalados com sucesso.");
+            DeleteScript(ps1Path);
+            progressBar1.Value = 97;
+
+            var installClientShipperDocker = ScriptsConst.InstallClientShipperDocker(pathGit);
+            CreatePs1(path, installClientShipperDocker);
+            ExecuteScript(pathGit, firstPathBat, "Instalando Client-Shipper no docker.");
+            AtualizarRichTextBox($"Projetos instalados com sucesso.");
+            DeleteScript(ps1Path);
+            progressBar1.Value = 98;
+
+            var installRedisDocker = ScriptsConst.InstallRedisDocker(pathGit);
+            CreatePs1(path, installRedisDocker);
+            ExecuteScript(pathGit, firstPathBat, "Instalando redis no docker.");
+            AtualizarRichTextBox($"Projetos instalados com sucesso.");
+            DeleteScript(ps1Path);
+            progressBar1.Value = 99;
+
+            AtualizarRichTextBox($"Criando banco de dados para platform...");
+            ConnectionDatabase.CreateDatabases(pathGit);
+            AtualizarRichTextBox($"Banco de dados criado com sucesso.");
 
             progressBar1.Value = 100;
-            AtualizarRichTextBox($"Criando banco de dados para platform...");
-            ConnectionDatabase.CreateDatabases();
-            AtualizarRichTextBox($"Banco de dados criado com sucesso.");
+            MessageBox.Show("Plaform instalado com sucesso");
         }
 
         public void ExecuteScript(string workingDirectory, string script, string message)
@@ -235,6 +268,12 @@ namespace PlatformInstall.Pages
         private void ChangeAppSettings(string path)
         {
             var newPath = Path.Combine(path, "nddFrete_Platform\\projects\\shipper\\Server\\NDDigital.Shipper.ShipperAPI\\appsettings.json");
+
+            if (!File.Exists(newPath))
+            {
+                AtualizarRichTextBox($"Não foi possivel encontrar o arquivo appsettings.json");
+                return;
+            }
             UpdateJsonFile<Appsettings>(newPath, clients =>
             {
                 clients.General.ConnectionStringCache = "191.235.97.40:6379";
@@ -246,7 +285,7 @@ namespace PlatformInstall.Pages
 
         private void richTextBox1_TextChanged_1(object? sender, EventArgs e)
         {
-            // Código para manipular a mudança de texto no RichTextBox, se necessário
+
         }
 
         private void progressBar1_Click(object sender, EventArgs e)
@@ -287,7 +326,16 @@ namespace PlatformInstall.Pages
 
         private void ReplaceClientId(string path)
         {
-            UpdateJsonFile<Configuracao>(Path.Combine(path, "nddFrete_Platform\\configs\\application.spec.json"), configuracao =>
+
+            var newPath = $@"{path}\nddFrete_Platform\configs\application.spec.json";
+
+            if (!File.Exists(newPath))
+            {
+                AtualizarRichTextBox($"Não foi possivel encontrar o arquivo application.spec.json.");
+                return;
+            }
+
+            UpdateJsonFile<Configuracao>(newPath, configuracao =>
             {
                 foreach (var app in configuracao.apps)
                 {
@@ -301,16 +349,16 @@ namespace PlatformInstall.Pages
         {
             try
             {
-                if (!Path.Exists(path))
-                {
-                    AtualizarRichTextBox($"Não foi possivel encontrar o arquivo.");
-                    return;
-                }
-
                 string keyToModify = "PLATFORM_AUTH_URL";
                 string newValue = "https://nddfrete-dev.e-datacenter.nddigital.com.br/";
 
                 var pathEnv = Path.Combine(path, "nddFrete_Platform\\configs\\.env");
+
+                if (!File.Exists(pathEnv))
+                {
+                    AtualizarRichTextBox($"Não foi possivel encontrar o arquivo .env.");
+                    return;
+                }
 
                 var lines = File.ReadLines(pathEnv)
                  .Select(line =>
@@ -333,20 +381,22 @@ namespace PlatformInstall.Pages
             {
                 AtualizarRichTextBox($"Ocorreu um erro na atualização do arquivo. {ex.Message}");
             }
-            
+
         }
 
         public void ChangeConfigurationNddGatewayJson(string path)
         {
             try
             {
-                if (!Path.Exists(path))
+                var newPath = Path.Combine(path, "nddFrete_Platform\\configs\\ndd-gateway.dev.docker.json");
+
+                if (!File.Exists(newPath))
                 {
-                    AtualizarRichTextBox($"Não foi possivel encontrar o arquivo.");
+                    AtualizarRichTextBox($"Não foi possivel encontrar o arquivo ndd-gateway.dev.docker.json.");
                     return;
                 }
 
-                UpdateJsonFile<NddGateway>(Path.Combine(path, "nddFrete_Platform\\configs\\ndd-gateway.dev.docker.json"), configuracao =>
+                UpdateJsonFile<NddGateway>(newPath, configuracao =>
                 {
                     foreach (var route in configuracao.Routes)
                     {
@@ -369,7 +419,7 @@ namespace PlatformInstall.Pages
             {
                 AtualizarRichTextBox($"Ocorreu um erro na atualização do arquivo. {ex.Message}");
             }
-           
+
         }
 
         private void UpdateJsonFile<T>(string path, Action<T> updateAction)
@@ -378,12 +428,6 @@ namespace PlatformInstall.Pages
 
             try
             {
-                if (!Path.Exists(path))
-                {
-                    AtualizarRichTextBox($"Não foi possivel encontrar o arquivo.");
-                    return;
-                }
-
                 string jsonConteudo = File.ReadAllText(path);
                 T configuracao = JsonConvert.DeserializeObject<T>(jsonConteudo);
 

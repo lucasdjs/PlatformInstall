@@ -22,7 +22,7 @@
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net8.0-windows"
+          "net6.0-windows"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
@@ -30,8 +30,8 @@
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net8.0-windows7.0": {
-            "targetAlias": "net8.0-windows",
+          "net6.0-windows7.0": {
+            "targetAlias": "net6.0-windows",
             "projectReferences": {}
           }
         },
@@ -42,40 +42,49 @@
         }
       },
       "frameworks": {
-        "net8.0-windows7.0": {
-          "targetAlias": "net8.0-windows",
+        "net6.0-windows7.0": {
+          "targetAlias": "net6.0-windows",
           "dependencies": {
+            "Microsoft.Build.Locator": {
+              "target": "Package",
+              "version": "[1.6.10, )"
+            },
+            "Microsoft.Build.Utilities.Core": {
+              "include": "Compile, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "target": "Package",
+              "version": "[17.8.3, )"
+            },
             "Microsoft.Data.SqlClient": {
               "target": "Package",
               "version": "[5.1.2, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[6.0.26, )"
             },
             "Microsoft.EntityFrameworkCore.Abstractions": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[7.0.0, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[6.0.26, )"
             },
             "Microsoft.EntityFrameworkCore.Relational": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[6.0.26, )"
             },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[6.0.25, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[6.0.25, )"
             },
             "Microsoft.Extensions.DependencyInjection": {
               "target": "Package",
@@ -85,21 +94,17 @@
               "target": "Package",
               "version": "[8.0.0, )"
             },
-            "Microsoft.PowerShell.Commands.Diagnostics": {
-              "target": "Package",
-              "version": "[7.4.0, )"
-            },
             "Microsoft.PowerShell.Commands.Management": {
               "target": "Package",
-              "version": "[7.4.0, )"
+              "version": "[6.2.7, )"
+            },
+            "Microsoft.PowerShell.Commands.Utility": {
+              "target": "Package",
+              "version": "[6.2.7, )"
             },
             "Microsoft.PowerShell.Native": {
               "target": "Package",
-              "version": "[7.4.0, )"
-            },
-            "Microsoft.SqlServer.Dac": {
-              "target": "Package",
-              "version": "[1.0.1, )"
+              "version": "[6.2.0, )"
             },
             "Microsoft.SqlServer.DacFx": {
               "target": "Package",
@@ -115,7 +120,7 @@
             },
             "System.Management.Automation": {
               "target": "Package",
-              "version": "[7.4.0, )"
+              "version": "[6.2.7, )"
             }
           },
           "imports": [
@@ -137,7 +142,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     }

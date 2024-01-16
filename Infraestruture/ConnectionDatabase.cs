@@ -1,5 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Diagnostics;
+using Microsoft.SqlServer.Dac.Compare;
+using Microsoft.SqlServer.Dac;
 
 namespace PlatformInstall.Infraestruture
 {
@@ -9,7 +11,7 @@ namespace PlatformInstall.Infraestruture
 
         private static string[] databaseNames = { "Shipper", "Monitoring", "DocumentStorage", "Payment", "Carrier" };
 
-        public static void CreateDatabases()
+        public static void CreateDatabases(string path)
         {
             try
             {
@@ -22,11 +24,16 @@ namespace PlatformInstall.Infraestruture
                         if (!DatabaseExists(connection, dbName))
                         {
                             CreateDatabase(connection, dbName);
+
                             string testDbName = dbName + "_Test";
+
+                            var scriptsFolderPath = Path.Combine(path, $"nddFrete_Platform\\projects\\shipper\\Server\\NDDigital.Shipper.DataBase.{dbName}");
+
                             if (!DatabaseExists(connection, testDbName))
-                            {
                                 CreateDatabase(connection, testDbName);
-                            }
+
+                            if (dbName == "Shipper")
+                                ExecuteScriptsShipper(connectionString, scriptsFolderPath);
                         }
                         else
                         {
@@ -38,6 +45,51 @@ namespace PlatformInstall.Infraestruture
             catch (Exception ex)
             {
                 Console.WriteLine($"Erro: {ex.Message}");
+            }
+        }
+
+        private static void ExecuteScriptsShipper(string targetConnectionString, string path)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(targetConnectionString))
+                {
+                    connection.Open();
+
+                    ExecuteScriptsInFolder(connection, Path.Combine(path, "address\\Tables"));
+                    ExecuteScriptsInFolder(connection, Path.Combine(path, "auth\\Tables"));
+                    ExecuteScriptsInFolder(connection, Path.Combine(path, "available\\Tables"));
+                    ExecuteScriptsInFolder(connection, Path.Combine(path, "carrier"));
+                    ExecuteScriptsInFolder(connection, Path.Combine(path, "dbo\\Tables"));
+                    ExecuteScriptsInFolder(connection, Path.Combine(path, "middleware\\Tables"));
+                    ExecuteScriptsInFolder(connection, Path.Combine(path, "otm\\Tables"));
+                    ExecuteScriptsInFolder(connection, Path.Combine(path, "processing\\Tables"));
+                    ExecuteScriptsInFolder(connection, Path.Combine(path, "Scripts"));
+                    ExecuteScriptsInFolder(connection, Path.Combine(path, "Security"));
+                    ExecuteScriptsInFolder(connection, Path.Combine(path, "Shipper\\Functions"));
+                    ExecuteScriptsInFolder(connection, Path.Combine(path, "Shipper\\Sequences"));
+                    ExecuteScriptsInFolder(connection, Path.Combine(path, "Shipper\\Tables"));
+                    ExecuteScriptsInFolder(connection, Path.Combine(path, "taxconfig\\Tables"));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro durante a execução dos scripts: {ex.Message}");
+            }
+        }
+
+        private static void ExecuteScriptsInFolder(SqlConnection connection, string folderPath)
+        {
+            string[] scriptFiles = Directory.GetFiles(folderPath, "*.sql");
+
+            foreach (var scriptFile in scriptFiles)
+            {
+                string scriptContent = File.ReadAllText(scriptFile);
+
+                using (SqlCommand command = new SqlCommand(scriptContent, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
             }
         }
 
@@ -77,42 +129,6 @@ namespace PlatformInstall.Infraestruture
                 command.ExecuteNonQuery();
                 Console.WriteLine($"Banco de dados '{databaseName}' criado com sucesso!");
             }
-        }
-
-        private static void SchemaCompare()
-        {
-            string sourceDacpacPath = @"C:\Caminho\Para\Seu\BancoDeDados_Source.dacpac";
-            string targetDacpacPath = @"C:\Caminho\Para\Seu\BancoDeDados_Target.dacpac";
-
-            // Configuração da comparação
-            var deployOptions = $"/Action:DeployReport /SourceFile:{sourceDacpacPath} /TargetFile:{targetDacpacPath}";
-
-            // Executar SqlPackage.exe para gerar o relatório de alterações
-            string sqlPackagePath = @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\Extensions\Microsoft\SQLDB\DAC\150\SqlPackage.exe";
-
-            Process process = new Process();
-            process.StartInfo.FileName = sqlPackagePath;
-            process.StartInfo.Arguments = deployOptions;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.CreateNoWindow = true;
-
-            process.Start();
-            string output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
-
-            Console.WriteLine("Relatório de Alterações:");
-            Console.WriteLine(output);
-
-            // Aplique as alterações usando a ação Publish
-            string publishOptions = $"/Action:Publish /SourceFile:{sourceDacpacPath} /TargetFile:{targetDacpacPath}";
-
-            process.StartInfo.Arguments = publishOptions;
-
-            process.Start();
-            process.WaitForExit();
-
-            Console.WriteLine("Alterações aplicadas com sucesso.");
         }
     }
 }

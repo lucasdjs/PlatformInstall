@@ -55,7 +55,7 @@ namespace PlatformInstall.Scripts
             ";
         }
 
-        public static string Script2(string pathGit)
+        public static string InstallTypescript(string pathGit)
         {
             ScriptsConst.InitializeLog(pathGit);
             var logRedirect = ScriptsConst.RedirectLog();
@@ -109,7 +109,7 @@ namespace PlatformInstall.Scripts
                 # Mudando para o diretório correto
                 {SetPlatform}
                 # Deletar as pastas
-                Remove-Item -Path ""$gitNDDigitalPath\nddFrete_Platform\projects\client-shipper"" -Recurse -Force
+                Remove-Item -Path ""{pathGit}\nddFrete_Platform\projects\client-shipper"" -Recurse -Force
 
                Stop-Process -Name ""cmd"" -Force";
         }
@@ -124,7 +124,7 @@ namespace PlatformInstall.Scripts
                 # Mudando para o diretório correto
                 {SetPlatform}
                 # Deletar as pastas
-                                Remove-Item -Path ""$gitNDDigitalPath\nddFrete_Platform\projects\shipper"" -Recurse -Force
+                                Remove-Item -Path ""{pathGit}\nddFrete_Platform\projects\shipper"" -Recurse -Force
                  Stop-Process -Name ""cmd"" -Force";
         }
 
@@ -282,7 +282,8 @@ namespace PlatformInstall.Scripts
                 docker login nddlabs.azurecr.io -Username nddLabs -Password ""DfNQ9CnZNV91b+6lcuTrPYW5NB9ERaJc""
                  Stop-Process -Name ""cmd"" -Force";
         }
-        public static string InstallProjectsDocker(string pathGit)
+
+        public static string InstallShipperDocker(string pathGit)
         {
             ScriptsConst.InitializeLog(pathGit);
             var logRedirect = ScriptsConst.RedirectLog();
@@ -291,13 +292,58 @@ namespace PlatformInstall.Scripts
                 {logRedirect}
                 # Mudando para o diretório correto
                 {SetPlatform}
-                #Realizando login no docker
-                docker login nddlabs.azurecr.io -Username nddLabs -Password ""DfNQ9CnZNV91b+6lcuTrPYW5NB9ERaJc""
-               #Instalando projetos no docker
-                ndk run start -d
                 ndk run shipper -d
+                Stop-Process -Name ""cmd"" -Force";
+        }
+
+        public static string InstallClientShipperDocker(string pathGit)
+        {
+            ScriptsConst.InitializeLog(pathGit);
+            var logRedirect = ScriptsConst.RedirectLog();
+
+            return $@"
+                {logRedirect}
+                # Mudando para o diretório correto
+                {SetPlatform}
                 ndk run client-shipper -d
+                Stop-Process -Name ""cmd"" -Force";
+        }
+
+        public static string InstallRedisDocker(string pathGit)
+        {
+            ScriptsConst.InitializeLog(pathGit);
+            var logRedirect = ScriptsConst.RedirectLog();
+
+            return $@"
+                {logRedirect}
+                # Mudando para o diretório correto
+                {SetPlatform}
                 ndk run redis -d
+                Stop-Process -Name ""cmd"" -Force";
+        }
+
+        public static string NpmInstall(string pathGit)
+        {
+            ScriptsConst.InitializeLog(pathGit);
+            var logRedirect = ScriptsConst.RedirectLog();
+
+            return $@"
+                {logRedirect}
+                # Mudando para o diretório correto
+                {SetPlatform}
+                npm install -g
+                Stop-Process -Name ""cmd"" -Force";
+        }
+
+        public static string InstallAppsDocker(string pathGit)
+        {
+            ScriptsConst.InitializeLog(pathGit);
+            var logRedirect = ScriptsConst.RedirectLog();
+
+            return $@"
+                {logRedirect}
+                {SetPlatform}
+                ndk run start-d
                 Stop-Process -Name ""cmd"" -Force";
         }
 
